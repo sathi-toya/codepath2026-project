@@ -1,0 +1,8 @@
+# macOS archive junk
+.DS_Store
+__MACOSX/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
