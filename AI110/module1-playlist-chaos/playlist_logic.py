@@ -160,15 +160,22 @@ def search_songs(
     field: str = "artist",
 ) -> List[Song]:
     """Return songs matching the query on a given field."""
-    if not query:
+    # Fix: strip before the emptiness check so a whitespace-only query counts
+    # as "no query" and shows every song, instead of falling through and
+    # matching nothing.
+    q = str(query or "").lower().strip()
+    if not q:
         return songs
 
-    q = query.lower().strip()
     filtered: List[Song] = []
 
     for song in songs:
         value = str(song.get(field, "")).lower()
-        if value and value in q:
+        # Fix: the containment test was reversed (`value in q`), which only
+        # matched when the song's field was a substring of the query. That made
+        # partial searches like "daft" fail while a full artist name matched.
+        # We want songs whose field contains the query.
+        if q in value:
             filtered.append(song)
 
     return filtered
